@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 smcgregor.
+ * Copyright 2015 c45y.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import org.bukkit.entity.Player;
 
 /**
  *
- * @author smcgregor
+ * @author c45y
  */
 public class JSServer {
     private Server _server;

@@ -45,7 +45,7 @@ public class TranceJS extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        this.getServer().getScheduler().cancelTasks(this);
     }
     
     public boolean shouldForcePermissions() {

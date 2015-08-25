@@ -23,31 +23,16 @@
  */
 package com.c45y.trancejs.js;
 
-import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 
 /**
  *
  * @author c45y
  */
-public class JSPlayer {
-    private Player _player;
+public class JSInventory {
+    private PlayerInventory _inventory;
     
-    public JSInventory inventory;
-    
-    public JSPlayer(Player player){
-        _player = player;
-        inventory = new JSInventory(player.getInventory());
-    }
-    
-    public String getName() {
-        return _player.getName();
-    }
-    
-    public boolean hasPermission(String permission) {
-        return _player.hasPermission(permission);
-    }
-    
-    public void sendMessage(String message) {
-        _player.sendMessage(message);
+    public JSInventory(PlayerInventory inventory) {
+        _inventory = inventory;
     }
 }
