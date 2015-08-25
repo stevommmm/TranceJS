@@ -66,7 +66,7 @@ public class TranceCommandHandler implements CommandExecutor {
         
         try {
             String script = getScript(jsCommand);
-            RunnableJS task = new RunnableJS(_plugin, sender, args, script);
+            RunnableJS task = new RunnableJS(_plugin, sender, args, script, _plugin.shouldForceAsync());
             if (_plugin.shouldForceAsync()) {
                 _plugin.getServer().getScheduler().runTaskAsynchronously(_plugin, task);
             } else {

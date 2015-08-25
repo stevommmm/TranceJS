@@ -40,14 +40,15 @@ public class RunnableJS implements Runnable {
     private CommandSender _sender;
     private String[] _args;
     private String _script;
-                    
+    private boolean _isAsync;
     
     
-    public RunnableJS(TranceJS plugin, CommandSender sender, String[] args, String script) {
+    public RunnableJS(TranceJS plugin, CommandSender sender, String[] args, String script, boolean isAsync) {
         _plugin = plugin;
         _sender = sender;
         _args = args;
         _script = script;
+        _isAsync = isAsync;
     }
     
     public void run() {
@@ -56,6 +57,7 @@ public class RunnableJS implements Runnable {
             ScriptEngine engine = manager.getEngineByName("JavaScript");
             engine.put("Command", new JSCommand(_sender, _args));
             engine.put("Server", new JSServer(_plugin.getServer()));
+            engine.put("isAsync", _isAsync);
             engine.eval(_script);
         } catch (ScriptException ex) {
             _sender.sendMessage(ChatColor.RED + "Failed to run script: " + ex.getMessage());
