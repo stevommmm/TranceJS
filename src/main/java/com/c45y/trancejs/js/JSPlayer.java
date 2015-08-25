@@ -49,8 +49,4 @@ public class JSPlayer {
     public void sendMessage(String message) {
         _player.sendMessage(message);
     }
-    
-    public void setInventorySlot(int slot, String material, int amount) {
-        _player.getInventory().setItem(slot, new ItemStack(Material.valueOf(material), amount));
-    }
 }
