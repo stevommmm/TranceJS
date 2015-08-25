@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -52,12 +51,26 @@ public class TranceCommandHandler implements CommandExecutor {
         _plugin = plugin;
     }
     
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] rargs) {       
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] rargs) {  
+        if (rargs.length == 0) {
+            sender.sendMessage(ChatColor.RED + "Failed to run script: No script found.");
+            return true;
+        }
+        
         /* Create a copy of our args, minus the first element which is our command name */
         String [] args = Arrays.copyOfRange(rargs, 1, rargs.length);
+        String jsCommand = rargs[0];
+        
+        if (_plugin.shouldForcePermissions()) {
+            if (!sender.hasPermission("trance.js." + jsCommand)) {
+                sender.sendMessage(ChatColor.RED + "Failed to run script: Permission " + ChatColor.GOLD + "trance.js." + jsCommand + ChatColor.RED + " not found.");
+                return true;
+            }
+        }
+        
         
         try {
-            String script = getScript(rargs[0]);
+            String script = getScript(jsCommand);
             runCommandJS(sender, args, script);
         } catch (ScriptException e) {
             sender.sendMessage(ChatColor.RED + "Failed to run script: " + e.getMessage());

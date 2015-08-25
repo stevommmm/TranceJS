@@ -33,9 +33,10 @@ public class TranceJS extends JavaPlugin {
 
     @Override
     public void onEnable() {
-//        this.getConfig().options().copyDefaults(true);
-//        this.getConfig().addDefault("forcePermissions", true);
-//        this.saveConfig();
+        this.getConfig().options().copyDefaults(true);
+        this.getConfig().addDefault("forcePermissions", true);
+        this.getConfig().addDefault("forceAsync", true);
+        this.saveConfig();
         
         this.getCommand("js").setExecutor(new TranceCommandHandler(this));
         
@@ -45,5 +46,13 @@ public class TranceJS extends JavaPlugin {
     @Override
     public void onDisable() {
 
+    }
+    
+    public boolean shouldForcePermissions() {
+        return getConfig().getBoolean("forcePermissions");
+    }
+    
+    public boolean shouldForceAsync() {
+        return getConfig().getBoolean("forceAsync");
     }
 }

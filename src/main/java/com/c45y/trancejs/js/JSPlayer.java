@@ -23,7 +23,9 @@
  */
 package com.c45y.trancejs.js;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -42,5 +44,13 @@ public class JSPlayer {
     
     public boolean hasPermission(String permission) {
         return _player.hasPermission(permission);
+    }
+    
+    public void sendMessage(String message) {
+        _player.sendMessage(message);
+    }
+    
+    public void setInventorySlot(int slot, String material, int amount) {
+        _player.getInventory().setItem(slot, new ItemStack(Material.valueOf(material), amount));
     }
 }
