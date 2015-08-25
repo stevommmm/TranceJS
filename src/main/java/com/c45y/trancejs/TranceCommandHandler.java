@@ -23,17 +23,12 @@
  */
 package com.c45y.trancejs;
 
-import com.c45y.trancejs.js.JSCommand;
-import com.c45y.trancejs.js.JSServer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -71,9 +66,12 @@ public class TranceCommandHandler implements CommandExecutor {
         
         try {
             String script = getScript(jsCommand);
-            runCommandJS(sender, args, script);
-        } catch (ScriptException e) {
-            sender.sendMessage(ChatColor.RED + "Failed to run script: " + e.getMessage());
+            RunnableJS task = new RunnableJS(_plugin, sender, args, script);
+            if (_plugin.shouldForceAsync()) {
+                _plugin.getServer().getScheduler().runTaskAsynchronously(_plugin, task);
+            } else {
+                _plugin.getServer().getScheduler().runTask(_plugin, task);
+            }
         } catch (FileNotFoundException e) {
             sender.sendMessage(ChatColor.RED + "Failed to run script: No script found.");
         }
@@ -90,13 +88,5 @@ public class TranceCommandHandler implements CommandExecutor {
         }
         Scanner scanner = new Scanner(script);
         return scanner.useDelimiter("\\A").next();
-    }
-    
-    private void runCommandJS(CommandSender sender, String[] args, String script) throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("JavaScript");
-        engine.put("Command", new JSCommand(sender, args));
-        engine.put("Server", new JSServer(_plugin.getServer()));
-        engine.eval(script);
     }
 }
