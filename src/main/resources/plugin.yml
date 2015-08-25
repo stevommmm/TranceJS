@@ -1,0 +1,7 @@
+name: TranceJS
+main: com.c45y.trancejs.TranceJS
+version: ${project.version}
+author: C45Y
+commands:
+  js:
+    description: TranceJS script execution command
