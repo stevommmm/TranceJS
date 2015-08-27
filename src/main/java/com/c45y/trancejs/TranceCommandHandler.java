@@ -23,12 +23,8 @@
  */
 package com.c45y.trancejs;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Scanner;
-import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -63,10 +59,17 @@ public class TranceCommandHandler implements CommandExecutor {
             }
         }
         
+        if (!_plugin.getCmdlets().containsKey(jsCommand)) {
+            sender.sendMessage(ChatColor.RED + "Failed to run script: No script found.");
+            return true;
+        }
         
         try {
-            String script = getScript(jsCommand);
+            // Get the absolute path to our file and read it to a String
+            String script = _plugin.getScript(_plugin.getCmdlets().get(jsCommand));
+            
             RunnableJS task = new RunnableJS(_plugin, sender, args, script, _plugin.shouldForceAsync());
+            
             if (_plugin.shouldForceAsync()) {
                 _plugin.getServer().getScheduler().runTaskAsynchronously(_plugin, task);
             } else {
@@ -77,16 +80,5 @@ public class TranceCommandHandler implements CommandExecutor {
         }
         
         return true;
-    }
-    
-    private String getScript(String scriptName) throws FileNotFoundException {
-        File script = new File(_plugin.getDataFolder(), scriptName + ".cmd.js");
-        try {
-            _plugin.getLogger().log(Level.INFO, "Searching for script {0}", script.getCanonicalPath());
-        } catch (IOException ex) {
-            _plugin.getLogger().log(Level.INFO, "Failed searching for script {0}", ex.getMessage());
-        }
-        Scanner scanner = new Scanner(script);
-        return scanner.useDelimiter("\\A").next();
     }
 }

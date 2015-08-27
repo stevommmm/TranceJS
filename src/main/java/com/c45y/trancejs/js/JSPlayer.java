@@ -50,4 +50,8 @@ public class JSPlayer {
     public void sendMessage(String message) {
         _player.sendMessage(message);
     }
+    
+    public void performCommand(String command) {
+        _player.performCommand(command);
+    }
 }

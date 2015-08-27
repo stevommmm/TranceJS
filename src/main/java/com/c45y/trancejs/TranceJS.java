@@ -23,6 +23,13 @@
  */
 package com.c45y.trancejs;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -30,6 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author c45y
  */
 public class TranceJS extends JavaPlugin {
+    private HashMap<String, String> _cmdlets = new HashMap<String, String>();
 
     @Override
     public void onEnable() {
@@ -37,6 +45,9 @@ public class TranceJS extends JavaPlugin {
         this.getConfig().addDefault("forcePermissions", true);
         this.getConfig().addDefault("forceAsync", true);
         this.saveConfig();
+        
+        /* Set up folders */
+        _cmdlets = getScriptMap("cmdlets");
         
         this.getCommand("js").setExecutor(new TranceCommandHandler(this));
         
@@ -48,11 +59,55 @@ public class TranceJS extends JavaPlugin {
         this.getServer().getScheduler().cancelTasks(this);
     }
     
+    public HashMap<String, String> getCmdlets() {
+        return _cmdlets;
+    }
+    
     public boolean shouldForcePermissions() {
         return getConfig().getBoolean("forcePermissions");
     }
     
     public boolean shouldForceAsync() {
         return getConfig().getBoolean("forceAsync");
+    }
+    
+    private HashMap<String, String> getScriptMap(String type) {
+        HashMap<String, String> scriptMap = new HashMap<String, String>();
+        File[] files = getScripts(type);
+        if (files != null) {
+            for( File f: files) {
+                String cmd = f.getName().replace(".cmd.js", "");
+                scriptMap.put(cmd, f.getAbsolutePath());
+                getLogger().log(Level.INFO, "Loaded {0} as command {1}", new String[] {f.getAbsolutePath(), cmd});
+            }
+        }
+        return scriptMap;
+    }
+    
+    private File[] getScripts(String type) {
+        File cmdscripts = new File(this.getDataFolder(), type);
+        if (!cmdscripts.exists()) {
+            try {
+                cmdscripts.createNewFile();
+            } catch (IOException ex) {
+                this.getLogger().log(Level.SEVERE, "Failed to create \"{0}\" directory!", type);
+            }
+        }
+        return cmdscripts.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".cmd.js");
+            }
+        });
+    }
+    
+    public String getScript(String scriptName) throws FileNotFoundException {
+        File script = new File(scriptName);
+        try {
+            getLogger().log(Level.INFO, "Searching for script {0}", script.getCanonicalPath());
+        } catch (IOException ex) {
+            getLogger().log(Level.INFO, "Failed searching for script {0}", ex.getMessage());
+        }
+        Scanner scanner = new Scanner(script);
+        return scanner.useDelimiter("\\A").next();
     }
 }
