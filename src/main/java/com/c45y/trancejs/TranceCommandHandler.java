@@ -68,7 +68,7 @@ public class TranceCommandHandler implements CommandExecutor {
             // Get the absolute path to our file and read it to a String
             String script = _plugin.getScript(_plugin.getCmdlets().get(jsCommand));
             
-            RunnableJS task = new RunnableJS(_plugin, sender, args, script, _plugin.shouldForceAsync());
+            RunnableJS task = new RunnableJS(_plugin, sender, args, script, _plugin.shouldForceAsync(), "COMMAND");
             
             if (_plugin.shouldForceAsync()) {
                 _plugin.getServer().getScheduler().runTaskAsynchronously(_plugin, task);

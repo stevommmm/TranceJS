@@ -25,7 +25,6 @@ package com.c45y.trancejs;
 
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import redis.clients.jedis.JedisPubSub;
 
@@ -67,7 +66,7 @@ public class TranceSub extends JedisPubSub {
             // Get the absolute path to our file and read it to a String
             String script = _plugin.getScript(_plugin.getCmdlets().get(jsCommand));
             
-            RunnableJS task = new RunnableJS(_plugin, sender, args, script, _plugin.shouldForceAsync());
+            RunnableJS task = new RunnableJS(_plugin, sender, args, script, _plugin.shouldForceAsync(), "PUBSUB");
             
             if (_plugin.shouldForceAsync()) {
                 _plugin.getServer().getScheduler().runTaskAsynchronously(_plugin, task);

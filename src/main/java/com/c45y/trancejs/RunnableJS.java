@@ -23,6 +23,7 @@
  */
 package com.c45y.trancejs;
 
+import com.c45y.trancejs.js.JSChatColor;
 import com.c45y.trancejs.js.JSCommand;
 import com.c45y.trancejs.js.JSServer;
 import java.util.logging.Level;
@@ -42,14 +43,16 @@ public class RunnableJS implements Runnable {
     private String[] _args;
     private String _script;
     private boolean _isAsync;
+    private String _executedBy;
     
     
-    public RunnableJS(TranceJS plugin, CommandSender sender, String[] args, String script, boolean isAsync) {
+    public RunnableJS(TranceJS plugin, CommandSender sender, String[] args, String script, boolean isAsync, String executedBy) {
         _plugin = plugin;
         _sender = sender;
         _args = args;
         _script = script;
         _isAsync = isAsync;
+        _executedBy = executedBy;
     }
     
     @Override
@@ -59,7 +62,9 @@ public class RunnableJS implements Runnable {
             ScriptEngine engine = manager.getEngineByName("JavaScript");
             engine.put("Command", new JSCommand(_sender, _args));
             engine.put("Server", new JSServer(_plugin.getServer()));
+            engine.put("ChatColor", new JSChatColor());
             engine.put("isAsync", _isAsync);
+            engine.put("executedBy", _executedBy);
             engine.eval(_script);
         } catch (ScriptException ex) {
             _plugin.getLogger().log(Level.SEVERE, "Failed to run script: " + ex.getMessage());
