@@ -31,16 +31,22 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  *
  * @author c45y
  */
 public class TranceJS extends JavaPlugin {
+    private static TranceJS _instance;
+    private JedisPool _jedis;
     private HashMap<String, String> _cmdlets = new HashMap<String, String>();
 
     @Override
     public void onEnable() {
+        _instance = this;
         this.getConfig().options().copyDefaults(true);
         this.getConfig().addDefault("forcePermissions", true);
         this.getConfig().addDefault("forceAsync", true);
@@ -51,12 +57,38 @@ public class TranceJS extends JavaPlugin {
         
         this.getCommand("js").setExecutor(new TranceCommandHandler(this));
         
-//        this.getServer().getPluginManager().registerEvents(this, this);
+        /* Set up redis pub/sub */
+        String server = getConfig().getString("redis.server", "localhost");
+        Integer port = getConfig().getInt("redis.port", 6379);
+        JedisPoolConfig poolconfig = new JedisPoolConfig();
+
+        if (getConfig().isSet("redis.timeout") && getConfig().isSet("redis.password")) {
+            _jedis = new JedisPool(poolconfig, server, port, getConfig().getInt("redis.timeout"), getConfig().getString("redis.password"));
+        } else if (getConfig().isSet("redis.timeout")) {
+            _jedis = new JedisPool(poolconfig, server, port, getConfig().getInt("redis.timeout"));
+        } else {
+            _jedis = new JedisPool(poolconfig, server, port);
+        }
+        getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                try (Jedis jedis = _jedis.getResource()) {
+                    jedis.psubscribe(new TranceSub(), "trance.*");
+                    _instance.getLogger().log(Level.INFO, "Subscribed to redis channel trance.*");
+                }
+            }
+        });
+        
     }
 
     @Override
     public void onDisable() {
         this.getServer().getScheduler().cancelTasks(this);
+        _jedis.destroy();
+    }
+    
+    public static TranceJS getInstance() {
+        return _instance;
     }
     
     public HashMap<String, String> getCmdlets() {

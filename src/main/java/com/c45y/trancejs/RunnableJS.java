@@ -25,6 +25,7 @@ package com.c45y.trancejs;
 
 import com.c45y.trancejs.js.JSCommand;
 import com.c45y.trancejs.js.JSServer;
+import java.util.logging.Level;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -51,6 +52,7 @@ public class RunnableJS implements Runnable {
         _isAsync = isAsync;
     }
     
+    @Override
     public void run() {
         try {
             ScriptEngineManager manager = new ScriptEngineManager();
@@ -60,6 +62,7 @@ public class RunnableJS implements Runnable {
             engine.put("isAsync", _isAsync);
             engine.eval(_script);
         } catch (ScriptException ex) {
+            _plugin.getLogger().log(Level.SEVERE, "Failed to run script: " + ex.getMessage());
             _sender.sendMessage(ChatColor.RED + "Failed to run script: " + ex.getMessage());
         }
     }
